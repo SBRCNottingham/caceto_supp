@@ -1,0 +1,14 @@
+{
+    "description": "Clostridium auto (Nottingham/Brookes)",
+    "author": "Rupert Norman",
+    "author_email": "rupert.norman@nottingham.ac.uk",
+    "tests_dir": "tests",
+    "design_dir": "designs",
+    "conditions_file": "model_conditions.json",
+    "repository_type": null,
+    "default_model": "metaclau.json",
+    "models": [
+        "metaclau.json"
+    ],
+    "name": "clau"
+}
