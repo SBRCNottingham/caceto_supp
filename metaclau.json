@@ -8370,8 +8370,8 @@
 "Pi":1.0,
 "WATER":-1.0
 },
-"lower_bound":2.154,
-"upper_bound":2.154,
+"lower_bound":0.0,
+"upper_bound":1000.0,
 "gene_reaction_rule":""
 },
 {
@@ -15341,14 +15341,11 @@
 },
 "lower_bound":-1000.0,
 "upper_bound":1000.0,
-"gene_reaction_rule":"",
-"objective_coefficient":1.0
+"gene_reaction_rule":""
 }
 ],
 "genes":[],
 "id":"metaclau",
-"compartments":{
-"":""
-},
+"compartments":{},
 "version":"1"
 }
