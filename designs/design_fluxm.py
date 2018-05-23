@@ -11,16 +11,14 @@ def gsmdesign_flux_minimisation(m, project):
     biomass = 0.028
     ngam = 2.154
     
-    # biomass and atp maintenance constraints
-    m.reactions.get_by_id('EX_BIOMASS').bounds = (biomass,biomass)
-    m.reactions.get_by_id('ATPASE-RXN').bounds = (ngam,ngam)
+    media = m.medium
     
-    cobra.manipulation.convert_to_irreversible(m) # model to irreversible version for minimisation objective
-
+    cobra.manipulation.convert_to_irreversible(m)
+    
+    min_reacts_path = os.path.abspath(os.path.join(project.project_path, 'reacs_for_min.json'))
+    
     #define list of enzyme-catalysed reactions based on PGDB from ScrumPy (i.e. exclude spontaneous and diffusion reactions)
-    react_list = os.path.join(project.project_path, 'reacs_for_min.json')
-    
-    with open(react_list,'r') as f:
+    with open(min_reacts_path,'r') as f:
         scrumpy_min_reactions = json.load(f)
 
     #list of cobra model reaction ids
@@ -37,6 +35,15 @@ def gsmdesign_flux_minimisation(m, project):
     m.objective.direction = 'min'
     m.objective = min_reactions
 
+    #constrain transporters to allow uptake of media components only
+    for reaction in m.exchanges:
+        if '_reverse' in reaction.id:
+            reaction.upper_bound = 0
+        elif reaction.id not in media:
+            reaction.lower_bound = 0
+        else:
+            reaction.lower_bound = -1000
+
     #constrain biomass transporters (feature of ScrumPy models) to 0
     for reaction in m.reactions: 
         if '_bm_tx' in reaction.id:
@@ -45,13 +52,22 @@ def gsmdesign_flux_minimisation(m, project):
 
     #enable production of biomass byproduct
     m.reactions.adenosyl_homocysteine_bm_tx.bounds = (-1000,0) 
+
+    #biomass and atp maintenance constraints
+    m.reactions.get_by_id('EX_BIOMASS').bounds = (biomass,biomass)
+    m.reactions.get_by_id('ATPASE-RXN').bounds = (ngam,ngam)
+
+    sol = m.optimize()
+    v = sol.fluxes
     return m
 
 gsmdesign_flux_minimisation.name = "flux minimisation"
 
 
 def gsmdesign_flux_minimisation_h2_restricted(model, project):
-    """ flux minimisation with h2 restriction """
+    """
+    flux minimisation with h2 restriction
+    """
     model.reactions.get_by_id('EX_HYDROGEN-MOLECULE').bounds = (0,0)
     return model
 
