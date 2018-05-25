@@ -146,3 +146,43 @@ def test_minimisation_fluxm_h2_restricted_products(model, project, log):
         "Ethanol production changes",
         desc="check to see if there is a difference in acetate production in non-hydrogen limited conditions"
     )
+    
+
+@ModelTestSelector(models="*", designs="*", conditions="*")
+def test_essential_reactions(model, project, log):
+    
+    singles_path = os.path.join(project.project_path, 'essential_singles.json')
+    with open(singles_path) as sp:
+        essential_reactions = json.load(sp)
+        
+    for rxn in essential_reactions:
+        try:
+            reaction = model.reactions.get_by_id(rxn)
+        except KeyError:
+            log.error("Reaction {} is listed as essential but not found in the model".format(rxn))
+            continue
+        
+        bnds = reaction.bounds
+        reaction.bounds = (0,0)
+        
+        reaction2 = None
+        try:
+            reaction2 = model.reactions.get_by_id(rxn +"_reverse")
+            r2bnds = reaction2.bounds
+            reaction2.bounds = (0,0)
+        except KeyError:
+            pass
+        
+        sol = model.optimize()
+        reaction.bounds = bnds
+        
+        if reaction2 is not None:
+            reaction2.bounds = r2bnds
+        
+        log.assertion(
+            sol.status == "infeasible" or sol.f < 1e-3,
+            "Essential reaction {} remains essential".format(rxn),
+            "Reaction lited as essential {} is not essential - solution = {}".format(rxn, sol.f)
+        )
+        
+        

@@ -55,6 +55,7 @@ def gsmdesign_flux_minimisation(m, project):
 
     #biomass and atp maintenance constraints
     m.reactions.get_by_id('EX_BIOMASS').bounds = (biomass,biomass)
+    m.reactions.get_by_id('BIOMASS').bounds = (biomass,biomass)
     m.reactions.get_by_id('ATPASE-RXN').bounds = (ngam,ngam)
 
     sol = m.optimize()
