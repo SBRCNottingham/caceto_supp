@@ -6,7 +6,12 @@ Copyright of The University of Nottingham and collaborators.
 ## Gsmodutils
 This project is shared using the gsmodutils project.
 This is a python tool designed to allow users to share genome scale modles with associated validation scripts and other data.
+To install within your python environment use:
+	
+	pip install gsmodutils
+
 For full details see the gsmodutils project.
+
 
 ## Docker image
 A docker image of this project can be used if docker is installed on your system.
