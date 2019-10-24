@@ -180,9 +180,9 @@ def test_essential_reactions(model, project, log):
             reaction2.bounds = r2bnds
         
         log.assertion(
-            sol.status == "infeasible" or sol.f < 1e-3,
+            sol.status == "infeasible" or sol.objective_value < 1e-3,
             "Essential reaction {} remains essential".format(rxn),
-            "Reaction lited as essential {} is not essential - solution = {}".format(rxn, sol.f)
+            "Reaction lited as essential {} is not essential - solution = {}".format(rxn, sol.objective_value)
         )
         
         
